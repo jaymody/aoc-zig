@@ -1,6 +1,5 @@
 const std = @import("std");
-const utils = @import("utils.zig");
-const stdout = std.io.getStdOut().writer();
+const aoc = @import("./aoc.zig");
 
 const Direction = enum { up, right, down, left };
 
@@ -22,7 +21,7 @@ fn rotate_right(direction: Direction) Direction {
     };
 }
 
-fn part1(buffer: []const u8) !void {
+fn part1(buffer: []const u8, _: std.mem.Allocator) !u64 {
     var instructions = std.mem.splitSequence(u8, buffer, ", ");
 
     var direction = Direction.up;
@@ -47,10 +46,10 @@ fn part1(buffer: []const u8) !void {
         }
     }
 
-    try stdout.print("{d}", .{@abs(dx) + @abs(dy)});
+    return @abs(dx) + @abs(dy);
 }
 
-fn part2(buffer: []const u8, allocator: std.mem.Allocator) !void {
+fn part2(buffer: []const u8, allocator: std.mem.Allocator) !u64 {
     var instructions = std.mem.splitSequence(u8, buffer, ", ");
 
     var direction = Direction.up;
@@ -80,8 +79,7 @@ fn part2(buffer: []const u8, allocator: std.mem.Allocator) !void {
             }
 
             if (visited.contains(.{ dx, dy })) {
-                try stdout.print("{d}", .{@abs(dx) + @abs(dy)});
-                return;
+                return @abs(dx) + @abs(dy);
             }
             try visited.put(.{ dx, dy }, {});
 
@@ -92,11 +90,5 @@ fn part2(buffer: []const u8, allocator: std.mem.Allocator) !void {
 }
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    const buffer = try utils.readAll(allocator);
-    switch (utils.getPart()) {
-        .one => try part1(buffer),
-        .two => try part2(buffer, allocator),
-    }
+    try aoc.runNumeric(u64, part1, part2);
 }
