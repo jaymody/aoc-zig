@@ -15,8 +15,8 @@ pub fn getPartFromCmdlineArgs() Part {
 }
 
 pub fn run(
-    comptime part1: fn (buffer: []const u8, allocator: std.mem.Allocator) anyerror![]const u8,
-    comptime part2: fn (buffer: []const u8, allocator: std.mem.Allocator) anyerror![]const u8,
+    comptime solve1: fn (buffer: []const u8, allocator: std.mem.Allocator) anyerror![]const u8,
+    comptime solve2: fn (buffer: []const u8, allocator: std.mem.Allocator) anyerror![]const u8,
 ) !void {
     const stdout = std.io.getStdOut().writer();
     const stdin = std.io.getStdIn().reader();
@@ -28,8 +28,8 @@ pub fn run(
     const input = std.mem.trimRight(u8, buffer[0..], "\n");
 
     const out = switch (getPartFromCmdlineArgs()) {
-        .one => try part1(input, allocator),
-        .two => try part2(input, allocator),
+        .one => try solve1(input, allocator),
+        .two => try solve2(input, allocator),
     };
 
     try stdout.print("{s}", .{out});
@@ -49,10 +49,10 @@ fn wrapNumericFn(
 
 pub fn runNumeric(
     comptime T: type,
-    comptime part1: fn ([]const u8, std.mem.Allocator) anyerror!T,
-    comptime part2: fn ([]const u8, std.mem.Allocator) anyerror!T,
+    comptime solve1: fn ([]const u8, std.mem.Allocator) anyerror!T,
+    comptime solve2: fn ([]const u8, std.mem.Allocator) anyerror!T,
 ) !void {
-    const wrapped1 = wrapNumericFn(T, part1);
-    const wrapped2 = wrapNumericFn(T, part2);
+    const wrapped1 = wrapNumericFn(T, solve1);
+    const wrapped2 = wrapNumericFn(T, solve2);
     try run(wrapped1, wrapped2);
 }
