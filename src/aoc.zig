@@ -1,7 +1,7 @@
 const std = @import("std");
 
 const Part = enum { one, two };
-pub fn getPartFromCmdlineArgs() Part {
+fn getPartFromCmdlineArgs() Part {
     var args = std.process.args();
     _ = args.next(); // first argument is the program itself
     const arg = args.next() orelse unreachable;
